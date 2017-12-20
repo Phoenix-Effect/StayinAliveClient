@@ -10,7 +10,7 @@ const io = socketIO(server);
 
 const publicPath = path.join( __dirname, './public');
 
-var socketObject = null;
+var socketObject = [];
 
 //recieves data
 firebase.initializeApp({
@@ -22,14 +22,16 @@ var listenStatus = database.ref('/' + day);
 
 //whenever data is updated send to clients if they are connected
 listenStatus.on('value', function(snapshot){
-    if(socketObject !== null){
-        var array = [];
-        snapshot.forEach(function(childSnapShot) {
-            var item = childSnapShot.val();
-            item.key = childSnapShot.key;
-            array.push(item);
+    if(socketObject.length !== 0){
+        socketObject.forEach( (socket) => {
+            var array = [];
+            snapshot.forEach(function(childSnapShot) {
+                var item = childSnapShot.val();
+                item.key = childSnapShot.key;
+                array.push(item);
+            });
+            socket.emit('event', [array[array.length - 1]]);
         });
-        socketObject.emit('event', [array[array.length - 1]]);
     }
 });
 
@@ -44,7 +46,7 @@ function sendInitial() {
             item.key = childSnapShot.key;
             array.push(item);
         });
-        socketObject.emit('event', array);
+        socketObject[socketObject.length - 1].emit('event', array);
     });
 }
 
@@ -53,7 +55,7 @@ app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
     console.log("user connected");
-    socketObject = socket;
+    socketObject.push(socket);
     setTimeout(sendInitial, 1000)
 });
 
@@ -68,18 +70,3 @@ database.ref('/').orderByKey().once('value').then(function(snapshot) {
         console.log(childSnapshot.key);
     })
 });
-
-//this makes an array of the snapshot
-firebase.database().ref('/' + day).once('value').then(function(snapshot) {
-    console.log("data loaded once");
-    var array = [];
-    snapshot.forEach(function(childSnapShot) {
-        var item = childSnapShot.val();
-        item.key = childSnapShot.key;
-        array.push(item);
-    });
-    console.log(array);
-
-});
-
-
