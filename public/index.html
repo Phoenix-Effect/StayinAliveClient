@@ -25,6 +25,7 @@
   <h1>CompSciLab uptime monitor</h1>
 
   <!-- Progress bar -->
+  <!--
   <div class="row">
     <div class="col-lg-12">
       <div class="progress">
@@ -35,13 +36,15 @@
       </div>
     </div>
   </div>
+  -->
 
   <!-- Double column -->
   <div class="row">
 
     <!-- Table of downtime -->
     <div class="col-sm-6">
-      <table class="table">
+      <h3>Today's status</h3>
+      <table class="table" id="statusTable">
         <thead>
         <tr>
           <th>Status</th>
@@ -49,14 +52,6 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td>Default</td>
-          <td>Defaultson</td>
-        </tr>
-        <tr class="success">
-          <td>Success</td>
-          <td>Doe</td>
-        </tr>
         </tbody>
       </table>
     </div>
@@ -65,13 +60,13 @@
     <div class="col-sm-6 well">
       <div class="row">
         <div class="col-xs-9">
-          <h3>Current Status</h3>
+          <h3>Current status</h3>
           <div id="status"></div>
           <div id="time"></div>
           <div id="date"></div>
         </div>
         <div class="col-xs-3">
-          <i class="fa fa-arrow-up fa-5x" aria-hidden="true" style="color:green;"></i>
+          <i id="statusArrow" class="fa fa-arrow-up fa-5x" aria-hidden="true"></i>
         </div>
       </div>
     </div>
