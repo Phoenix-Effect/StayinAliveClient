@@ -19,9 +19,17 @@ firebase.initializeApp({
 let day = new Date().toDateString();
 var database = firebase.database();
 var listenStatus = database.ref('/' + day);
+
+//whenever data is updated send to clients if they are connected
 listenStatus.on('value', function(snapshot){
     if(socketObject !== null){
-        socketObject.emit('event', snapshot.val())
+        var array = [];
+        snapshot.forEach(function(childSnapShot) {
+            var item = childSnapShot.val();
+            item.key = childSnapShot.key;
+            array.push(item);
+        });
+        socketObject.emit('event', [array[array.length - 1]]);
     }
 });
 
@@ -30,7 +38,13 @@ listenStatus.on('value', function(snapshot){
 function sendInitial() {
     firebase.database().ref('/' + day).once('value').then(function(snapshot) {
         console.log("sent data once");
-        socketObject.emit('event', snapshot.val());
+        var array = [];
+        snapshot.forEach(function(childSnapShot) {
+            var item = childSnapShot.val();
+            item.key = childSnapShot.key;
+            array.push(item);
+        });
+        socketObject.emit('event', array);
     });
 }
 
@@ -43,17 +57,19 @@ io.on('connection', (socket) => {
     setTimeout(sendInitial, 1000)
 });
 
-//Start the server
-// server.listen(8010, () =>{
-//     console.log('Server up');
-// });
+// //Start the server
+server.listen(8010, () =>{
+    console.log('Server up');
+});
 
-// database.ref('/').orderByKey().once('value').then(function(snapshot) {
-//     snapshot.forEach(function(childSnapshot) {
-//         console.log(childSnapshot.key);
-//     })
-// });
+//this function shows all of the tables in firebase
+database.ref('/').orderByKey().once('value').then(function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+        console.log(childSnapshot.key);
+    })
+});
 
+//this makes an array of the snapshot
 firebase.database().ref('/' + day).once('value').then(function(snapshot) {
     console.log("data loaded once");
     var array = [];
