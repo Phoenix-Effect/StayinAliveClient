@@ -14,7 +14,7 @@ var socketObject = [];
 
 //recieves data
 firebase.initializeApp({
-    databaseURL: 'https://stayinalive-189208.firebaseio.com/',
+    databaseURL: 'URL to Firebase',
 });
 let day = new Date().toDateString();
 var database = firebase.database();
